@@ -1,5 +1,8 @@
 FROM --platform=arm64 python:3.9-buster
 
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUMBUFFERED 1
+
 WORKDIR /src
 
 RUN pip install poetry

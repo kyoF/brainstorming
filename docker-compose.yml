@@ -1,4 +1,5 @@
 version: '3'
+
 services:
   backend:
     build: ./backend
@@ -9,14 +10,10 @@ services:
     tty: true
 
   db:
-    image: mysql:8.0.28
-    environment:
-      - MYSQL_ROOT_PASSWORD=rootpassword
-      - MYSQL_DATABASE=memorandum
-      - MYSQL_USER_MEMORANDUM=memorandum
-      - MYSQL_PASSWORD_MEMORANDUM=memorandum
-    volumes:
-      - ./mysql/data:/var/lib/mysql
-      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+    build: ./db/
+    env_file:
+      - ./db/.env
     ports:
       - 3306:3306
+    volumes:
+      - ./db/conf.d:/etc/mysql/conf.d

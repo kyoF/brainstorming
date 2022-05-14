@@ -1,3 +1,4 @@
+import sqlalchemy.ext.declarative as dec
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -6,14 +7,29 @@ from sqlalchemy import pool
 from alembic import context
 
 import os
-from api.v1.db import Base
-from api.v1.models.user import User
-from api.v1.models.post import Post
-from api.v1.models.lgtm import Lgtm
+from os.path import dirname, join
+
+from dotenv import load_dotenv
+
+from brainstorming import models
+
+load_dotenv(verbose=True)
+dotenv_path = join(dirname(__file__), '../.env')
+load_dotenv(dotenv_path)
+
+user_name = os.environ.get('DB_USER_NAME')
+password = os.environ.get('DB_PASSWORD')
+host = os.environ.get('DB_HOST')
+database_name = os.environ.get('DB_NAME')
+
+DATABASE = f'mysql+mysqlconnector://{user_name}:{password}@{host}/{database_name}?charset=utf8'
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+config.set_main_option('sqlalchemy.url', DATABASE)
+
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -24,7 +40,9 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = None
+# target_metadata = None
+SqlAlchemyBase = dec.declarative_base()
+target_metadata = SqlAlchemyBase.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -57,10 +75,12 @@ def run_migrations_offline():
 
 
 def run_migrations_online():
-    config.set_section_option(
-        "alembic", "MYSQL_ROOT_PASSWORD", os.environ.get("MYSQL_ROOT_PASSWORD"))
-    url = config.get_main_option("sqlalchemy.url")
+    """Run migrations in 'online' mode.
 
+    In this scenario we need to create an Engine
+    and associate a connection with the context.
+
+    """
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),
         prefix="sqlalchemy.",
@@ -69,9 +89,7 @@ def run_migrations_online():
 
     with connectable.connect() as connection:
         context.configure(
-            url=url,
-            connection=connection,
-            target_metadata=target_metadata
+            connection=connection, target_metadata=target_metadata
         )
 
         with context.begin_transaction():
