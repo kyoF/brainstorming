@@ -11,4 +11,4 @@ COPY poetry.lock* ./
 RUN poetry config virtualenvs.in-project true
 RUN poetry install
 
-ENTRYPOINT ["poetry","run","uvicorn","api.v1.main:app","--host","0.0.0.0","--reload"]
+ENTRYPOINT ["poetry","run","uvicorn","main:app","--host","0.0.0.0","--reload"]

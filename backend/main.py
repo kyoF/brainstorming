@@ -15,8 +15,8 @@ app = FastAPI()
 app.include_router(router)
 
 origins = (
-    'http://0.0.0.0:8080',
-    'http://localhost:8080',
+    'http://0.0.0.0:8000',
+    'http://localhost:8000',
 )
 
 app.add_middleware(
